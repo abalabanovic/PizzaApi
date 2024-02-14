@@ -44,6 +44,15 @@ def get_orders(user):
 @app.route('/cancel_order/<username>/<order_id>', methods=['DELETE'])
 def cancel_order(username, order_id):
     return orderHandler.user_cancel_order(username,order_id)
+
+@app.route('/menu', methods = ['POST'])
+def add_pizza():
+    data = request.get_json()
+    return pizzaHandler.add_pizza_admin(data)
+
+@app.route('/menu/<pizza_id>', methods=['DELETE'])
+def delete_admin(pizza_id):
+    return pizzaHandler.delete_pizza_admin(pizza_id)
   
 if __name__ == '__main__':
     app.run(debug=True)

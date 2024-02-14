@@ -7,7 +7,48 @@ import time
 import requests
 import json
 
-baseUrl = 'http://127.0.0.1:5000'
+#baseUrl = 'http://127.0.0.1:5000'
+baseUrl = os.environ['SERVER_IP']
+
+def deletePizza():
+    showMenu()
+    id = input("Enter pizza id:\n")
+    response = requests.delete(baseUrl+ '/menu/{id}')
+    print(f'{response.text} {response.status_code}')
+    showMenu()
+
+def createPizza():
+    pizza_name = input("Enter pizza name:\n")
+    pizza_price = input("Enter pizza price:\n")
+
+    pizza_info = {'name': pizza_name,'price': pizza_price}
+    response = requests.post(baseUrl + "/menu", json = pizza_info)
+
+    print(f'{response.text} {response.status_code}')
+
+def adminMenu():
+
+    while True:
+
+        admin_string = """
+        1.Add pizza to menu
+        2.Delete pizza from menu
+        3.Show pizza menu
+        3.Cancel order(regardless of status)
+        """
+        print(admin_string)
+        option = input("Choose an option:\n")
+
+        if option == '1':
+            createPizza()
+
+
+        elif option == '2':
+            deletePizza()
+        
+        elif option == '3':
+            showMenu()
+
 
 
 def createOrder(user, pizza):
@@ -27,7 +68,13 @@ def get_log_user():
     if response.status_code == 200:
         user = response.json()
 
-    menu_list(user)
+        if user['role'] == 'customer':
+            menu_list(user)
+        else:
+            adminMenu()
+
+    else:
+        print(f"{response.text} {response.status_code}")
 
 def switch(choice,user):
 
@@ -56,9 +103,7 @@ def switch(choice,user):
 
         print(f'{response.text} {response.status_code}')
 
-        if response.status_code == 200:
-            orders = response.json().get('orders')
-            print(orders)
+
 
     elif choice == '3':
         order_number = input("Enter order id: ")
@@ -71,15 +116,17 @@ def menu_list(user):
 
     while True:
 
-        print("-----MENU------")
-        print("1.Create order")
-        print("2.Check order status")
-        print("3.Cancel order")
-        print("4.Show menu")
-        print("5.Logout")
-        print("---------------")
+        menu_string= '''
+        -----MENU------
+        1.Create order
+        2.Check order status
+        3.Cancel order
+        4.Show menu
+        5.Logout
+        '''
+        print(menu_string)
 
-        choice = input("Enter your choice: ")
+        choice = input("Enter your choice:\n")
         
         switch(choice,user)
 
@@ -102,10 +149,13 @@ def loginMenu():
 
         while True:
 
-            print("----Welcome to loging menu----")
-            print("1----Login")
-            print("2----Main menu")
-            answer2 = input("Choose an option")
+            login_string = '''
+            Welcome to log in menu
+            1----Login
+            2----Main menu
+                '''
+            print(login_string)
+            answer2 = input("Choose an option:\n")
 
             if answer2 == "1":
                 username = input("Enter your username:\n")
@@ -140,6 +190,14 @@ def registerUser(username,password,address):
 
     elif response.status_code == 400:
             print("Arguments are missing!Please try again!")
+
+    else:
+            if 400 <= response.status_code < 500:
+                print(f"Client Error! {response.status_code}")
+            elif 500 <= response.status_code < 600:
+                print(f"Server Error! {response.status_code}")
+            else:
+                print(f"Unknown error! {response.status_code}")
 
 def registerMenu():
 

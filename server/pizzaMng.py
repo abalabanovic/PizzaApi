@@ -20,10 +20,12 @@ class PizzaManager():
         self.next_id = len(self.allPizzas) - 1
 
 
-    def delete_pizza(self, search_id):
+    def delete_pizza(self, id):
+
+        print(type(id))
 
         for pizza in self.allPizzas:
-            if pizza.id == int(search_id):
+            if pizza.id == int(id):
                 self.allPizzas.remove(pizza)
                 return self.allPizzas
 
