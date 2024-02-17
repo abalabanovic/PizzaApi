@@ -11,6 +11,7 @@ class PizzaHandler:
         return jsonify({'pizzas' : get_pizzas})
         
     def delete_pizza_admin(self, pizza_id):
+        print(pizza_id)
         new_pizza_menu = self.pizza_manager.delete_pizza(pizza_id)
 
         if new_pizza_menu:

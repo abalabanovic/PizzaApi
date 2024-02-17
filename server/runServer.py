@@ -12,7 +12,16 @@ user_Handler = UserHandler()
 pizzaHandler = PizzaHandler()
 orderHandler = OrderHandler()
 
+server_token = '1234'
 
+def tokenCheck(token):
+
+    if token == server_token:
+        return True
+    else:
+        return False
+
+#CLIENT
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -45,6 +54,8 @@ def get_orders(user):
 def cancel_order(username, order_id):
     return orderHandler.user_cancel_order(username,order_id)
 
+#ADMIN
+
 @app.route('/menu', methods = ['POST'])
 def add_pizza():
     data = request.get_json()
@@ -53,6 +64,17 @@ def add_pizza():
 @app.route('/menu/<pizza_id>', methods=['DELETE'])
 def delete_admin(pizza_id):
     return pizzaHandler.delete_pizza_admin(pizza_id)
-  
+
+@app.route('/order/<order_id>', methods=['DELETE'])
+def cancel_order_admin(order_id):
+    return orderHandler.admin_cancel_order(order_id)
+
+@app.route('/get_all_orders', methods=['GET'])
+def see_all_orders():
+    return orderHandler.get_all_orders()
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

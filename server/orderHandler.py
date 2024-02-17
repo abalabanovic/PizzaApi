@@ -34,5 +34,19 @@ class OrderHandler:
 
         return jsonify({'message': cancel_order[0],}), cancel_order[1]
 
-   
+    def get_all_orders(self):
+
+        all_orders = self.order_manager.get_all_orders()
+
+        if all_orders:
+            return jsonify({'orders': all_orders}), 200
+        else:
+            return jsonify({"Message": "Orders not found!"}), 404
         
+    def admin_cancel_order(self, order_id):
+        cancel_order = self.order_manager.cancel_order_admin(order_id)
+
+        if cancel_order == True:
+            return jsonify({'Message': 'Order was deleted'}), 200
+        else:
+            return jsonify({'Error': 'Something went wrong!Please try again.'}), 404

@@ -51,6 +51,7 @@ class UserHandler:
 
     def get_logged_user(self):
 
+    
         logged_user = self.userManager.get_logged_user()
 
         return jsonify(logged_user)

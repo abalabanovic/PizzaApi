@@ -22,12 +22,11 @@ class PizzaManager():
 
     def delete_pizza(self, id):
 
-        print(type(id))
 
         for pizza in self.allPizzas:
-            if pizza.id == int(id):
-                self.allPizzas.remove(pizza)
-                return self.allPizzas
+           if pizza.id == int(id):
+               self.allPizzas.remove(pizza)
+               return self.allPizzas
 
         return None    
 

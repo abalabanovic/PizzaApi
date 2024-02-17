@@ -7,9 +7,7 @@ class UserManager:
         self.logged_user = None
         admin = User('admin', 'admin', None, 'admin')
         #FOR TESTING ONLY
-        andrej = User('andrej', 'andrej', 'Spanskih boraca 30a', 'customer')
         self.users.append(admin)
-        self.users.append(andrej)
         
 
     def login_user(self,username,password):
@@ -38,6 +36,7 @@ class UserManager:
         return all_users
 
     def get_logged_user(self):
+
         return self.logged_user.__json__()
     
     def logout(self):

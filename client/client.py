@@ -9,11 +9,12 @@ import json
 
 #baseUrl = 'http://127.0.0.1:5000'
 baseUrl = os.environ['SERVER_IP']
+admin_token = os.environ['ADMIN_TOKEN']
 
 def deletePizza():
     showMenu()
     id = input("Enter pizza id:\n")
-    response = requests.delete(baseUrl+ '/menu/{id}')
+    response = requests.delete(baseUrl+ f'/menu/{id}')
     print(f'{response.text} {response.status_code}')
     showMenu()
 
@@ -34,7 +35,8 @@ def adminMenu():
         1.Add pizza to menu
         2.Delete pizza from menu
         3.Show pizza menu
-        3.Cancel order(regardless of status)
+        4.Cancel order(regardless of status)
+        5.Logout
         """
         print(admin_string)
         option = input("Choose an option:\n")
@@ -49,7 +51,26 @@ def adminMenu():
         elif option == '3':
             showMenu()
 
+        elif option == '4':
 
+            show_all_orders()
+            id = int(input("Enter order id to cancel it:\n"))
+
+            response = requests.delete(baseUrl + f'/order/{id}')
+            if response.status_code == 200:
+                print(f'{response.text}{response.status_code}')
+                show_all_orders()
+
+            else:
+                print(f'{response.text}{response.status_code}')
+
+        elif option == '5':
+            sys.exit()
+
+def show_all_orders():
+
+    response = requests.get(baseUrl + '/get_all_orders')
+    print(f'{response.text} {response.status_code}')
 
 def createOrder(user, pizza):
     data = {'username': user['username'], 'address': user['address'], 'pizza': pizza}
@@ -86,7 +107,7 @@ def switch(choice,user):
         pizza_list = response.json().get('pizzas')
             
         if pizza_list:
-            pizza_choice = int(input("Enter pizza id"))
+            pizza_choice = int(input("Enter pizza id:\n"))
             selected_pizza = next((pizza for pizza in pizza_list if pizza['id'] == pizza_choice),None)
 
             if selected_pizza:
@@ -111,6 +132,9 @@ def switch(choice,user):
         response = requests.delete(baseUrl + f"/cancel_order/{user['username']}/{order_number}")
         print(response.text)
         print(response.status_code)
+
+    elif choice == '5':
+        sys.exit()
 
 def menu_list(user):
 
@@ -145,16 +169,19 @@ def showMenu():
 
     return response
 
+def lm():
+    login_string = '''
+Welcome to login menu:
+1-----Login
+2-----Go back
+    '''
+    print(login_string)
+
 def loginMenu():
 
         while True:
 
-            login_string = '''
-            Welcome to log in menu
-            1----Login
-            2----Main menu
-                '''
-            print(login_string)
+            lm()
             answer2 = input("Choose an option:\n")
 
             if answer2 == "1":

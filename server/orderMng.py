@@ -56,7 +56,7 @@ class OrderManager:
         for order in self.orders:
             if order.id == int(order_id):
                 self.orders.remove(order)
-                return self.orders
+                return True
             else:
-                return None
+                return False
 
