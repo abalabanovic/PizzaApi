@@ -1,4 +1,4 @@
-from userMng import UserManager
+from Managers.userMng import UserManager
 from flask import Flask, request,jsonify
 import os
 

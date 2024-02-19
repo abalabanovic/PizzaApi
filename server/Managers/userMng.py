@@ -1,4 +1,4 @@
-from user import User
+from baseModels.user import User
 
 class UserManager:
 

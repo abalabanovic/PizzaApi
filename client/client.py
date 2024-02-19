@@ -8,11 +8,17 @@ import requests
 import json
 
 #baseUrl = 'http://127.0.0.1:5000'
-
-baseUrl = os.environ['SERVER_IP']
+try:
+    baseUrl = os.environ['SERVER_IP']
+except KeyError:
+    print("Please give server ip to SERVER_IP in env!")
+    sys.exit(1)
 try:
     admin_token = os.environ['ADMIN_TOKEN']
 except KeyError:
+    print("Admin token is not provided!")
+    print("ADMIN_TOKEN in env is not defined!")
+    time.sleep(1)
     admin_token = " "
 
 headers = {'Authorization': f'Bearer {admin_token}', 'Content-Type': 'application/json'}

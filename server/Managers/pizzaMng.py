@@ -1,4 +1,4 @@
-from pizza import Pizza
+from baseModels.pizza import Pizza
 
 class PizzaManager():
     def __init__(self):

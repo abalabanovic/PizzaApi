@@ -1,4 +1,4 @@
-from pizzaMng import PizzaManager
+from Managers.pizzaMng import PizzaManager
 from flask import jsonify
 
 class PizzaHandler:

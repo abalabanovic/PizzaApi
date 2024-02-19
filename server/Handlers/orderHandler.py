@@ -1,4 +1,4 @@
-from orderMng import OrderManager
+from Managers.orderMng import OrderManager
 from flask import jsonify
 import threading
 
