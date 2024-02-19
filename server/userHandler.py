@@ -6,7 +6,6 @@ class UserHandler:
 
     def __init__(self):
         self.userManager = UserManager()
-        self.hardcodeToken = "1234"
 
     def register_user(self,data):
         username = data.get('username')
@@ -26,7 +25,7 @@ class UserHandler:
 
             return jsonify({'message' : 'Username is already taken'}), 409
     
-    def login(self,data):
+    def login(self,data,admin_token_status):
 
         username = data.get('username')
         password = data.get('password')
@@ -43,9 +42,12 @@ class UserHandler:
                     return jsonify({"Message":"Succesfull login!"}),200
 
             else:
-                
-                    return jsonify({"Message": "Welcome admin!"}), 200
-        else :
+                    #check token
+                    if admin_token_status:
+                        return jsonify({"Message": "Welcome admin!"}), 200
+                    else:
+                        return jsonify({"Message": "Unauthorized!"}), 401
+        else : 
 
                 return jsonify({"Error":"User not found"}), 404
 

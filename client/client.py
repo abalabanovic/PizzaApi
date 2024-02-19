@@ -8,13 +8,19 @@ import requests
 import json
 
 #baseUrl = 'http://127.0.0.1:5000'
+
 baseUrl = os.environ['SERVER_IP']
-admin_token = os.environ['ADMIN_TOKEN']
+try:
+    admin_token = os.environ['ADMIN_TOKEN']
+except KeyError:
+    admin_token = " "
+
+headers = {'Authorization': f'Bearer {admin_token}', 'Content-Type': 'application/json'}
 
 def deletePizza():
     showMenu()
     id = input("Enter pizza id:\n")
-    response = requests.delete(baseUrl+ f'/menu/{id}')
+    response = requests.delete(baseUrl+ f'/menu/{id}', headers=headers)
     print(f'{response.text} {response.status_code}')
     showMenu()
 
@@ -23,7 +29,7 @@ def createPizza():
     pizza_price = input("Enter pizza price:\n")
 
     pizza_info = {'name': pizza_name,'price': pizza_price}
-    response = requests.post(baseUrl + "/menu", json = pizza_info)
+    response = requests.post(baseUrl + "/menu", json = pizza_info, headers = headers)
 
     print(f'{response.text} {response.status_code}')
 
@@ -53,24 +59,30 @@ def adminMenu():
 
         elif option == '4':
 
-            show_all_orders()
-            id = int(input("Enter order id to cancel it:\n"))
+            status = show_all_orders()
+            if status:
 
-            response = requests.delete(baseUrl + f'/order/{id}')
-            if response.status_code == 200:
-                print(f'{response.text}{response.status_code}')
-                show_all_orders()
+                id = int(input("Enter order id to cancel it:\n"))
 
-            else:
-                print(f'{response.text}{response.status_code}')
+                response = requests.delete(baseUrl + f'/order/{id}', headers = headers)
+                if response.status_code == 200:
+                    print(f'{response.text}{response.status_code}')
+                    show_all_orders()
+
+                else:
+                    print(f'{response.text}{response.status_code}')
 
         elif option == '5':
             sys.exit()
 
 def show_all_orders():
 
-    response = requests.get(baseUrl + '/get_all_orders')
+    response = requests.get(baseUrl + '/get_all_orders', headers = headers)
     print(f'{response.text} {response.status_code}')
+    if response.status_code == 401:
+        return False
+    else:
+        return True
 
 def createOrder(user, pizza):
     data = {'username': user['username'], 'address': user['address'], 'pizza': pizza}
@@ -88,11 +100,16 @@ def get_log_user():
     
     if response.status_code == 200:
         user = response.json()
+        
+        if user is not None:
 
-        if user['role'] == 'customer':
-            menu_list(user)
+            if user['role'] == 'customer':
+                menu_list(user)
+            elif user['role'] == 'admin':
+                adminMenu()
         else:
-            adminMenu()
+            print("User does not exist!Please register!")
+
 
     else:
         print(f"{response.text} {response.status_code}")
@@ -189,10 +206,13 @@ def loginMenu():
                 password = getpass.getpass("Enter your password\n")
 
                 data = {'username': username, 'password': password}
-                response = requests.post(baseUrl + "/login", json=data)
+                response = requests.post(baseUrl + "/login", json=data, headers=headers)
                 print(f'{response.text} {response.status_code}')
 
-                get_log_user()
+                if(response.status_code == 401):
+                    continue
+                else:
+                    get_log_user()
 
             elif answer2 == '2':
                 startMenu()
@@ -255,7 +275,11 @@ def startMenu():
         print("1--------LOGIN")
         print("2--------REGISTER")
         print("3--------EXIT")
-        answer1 = input("Please choose an option\n")
+        
+        try:
+            answer1 = input("Please choose an option\n")
+        except KeyboardInterrupt:
+            sys.exit()
 
         if answer1 == '3':
             sys.exit()

@@ -37,7 +37,19 @@ class UserManager:
 
     def get_logged_user(self):
 
-        return self.logged_user.__json__()
+        try:
+            
+            if self.logged_user is not None:
+                return self.logged_user.__json__()
+            else:
+                print("User is not found!")
+                return None            
+        except AttributeError as e:
+            print("AttributeError:", e)
+            return None
+        except Exception as e:
+            print("Error:", e)
+            return None
     
     def logout(self):
         self.logged_user = None

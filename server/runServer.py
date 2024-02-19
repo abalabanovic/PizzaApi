@@ -12,7 +12,7 @@ user_Handler = UserHandler()
 pizzaHandler = PizzaHandler()
 orderHandler = OrderHandler()
 
-server_token = '1234'
+server_token = 'ABC123'
 
 def tokenCheck(token):
 
@@ -31,11 +31,17 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    return user_Handler.login(data)
+    token = request.headers.get('Authorization').split(' ')[1]
+    if tokenCheck(token):
+        admin_status = True
+    else:
+        admin_status = False
+    return user_Handler.login(data, admin_status)
 
 @app.route('/get_logged_user', methods=['GET'])
 def get_logged_user():
     return user_Handler.get_logged_user()
+    
 
 @app.route('/get_menu', methods=['GET'])
 def get_menu():
@@ -59,20 +65,36 @@ def cancel_order(username, order_id):
 @app.route('/menu', methods = ['POST'])
 def add_pizza():
     data = request.get_json()
-    return pizzaHandler.add_pizza_admin(data)
+    token = request.headers.get('Authorization').split(' ')[1]
+    if tokenCheck(token):
+        return pizzaHandler.add_pizza_admin(data)
+    else:
+        return jsonify({'message': 'Unauthorized'}), 401
+
 
 @app.route('/menu/<pizza_id>', methods=['DELETE'])
 def delete_admin(pizza_id):
-    return pizzaHandler.delete_pizza_admin(pizza_id)
+    token = request.headers.get('Authorization').split(' ')[1]
+    if tokenCheck(token):
+        return pizzaHandler.delete_pizza_admin(pizza_id)
+    else:
+        return jsonify({'message': 'Unauthorized'}), 401
 
 @app.route('/order/<order_id>', methods=['DELETE'])
 def cancel_order_admin(order_id):
-    return orderHandler.admin_cancel_order(order_id)
+    token = request.headers.get('Authorization').split(' ')[1]
+    if tokenCheck(token):
+        return orderHandler.admin_cancel_order(order_id)
+    else:
+        return jsonify({'message': 'Unauthorized'}), 401
 
 @app.route('/get_all_orders', methods=['GET'])
 def see_all_orders():
-    return orderHandler.get_all_orders()
-
+    token = request.headers.get('Authorization').split(' ')[1]
+    if tokenCheck(token):
+        return orderHandler.get_all_orders()
+    else:
+        return jsonify({'message': 'Unauthorized'}), 401
 
 
 
