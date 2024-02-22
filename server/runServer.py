@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3.10
 
 from Handlers.pizzaHandler import PizzaHandler
 from Handlers.userHandler import UserHandler

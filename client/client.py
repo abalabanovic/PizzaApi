@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3.10
 
 import os
 import sys
@@ -7,7 +7,7 @@ import time
 import requests
 import json
 
-#baseUrl = 'http://127.0.0.1:5000'
+#baseUrl = 'http://127.0.0.1:<port_number>'
 try:
     baseUrl = os.environ['SERVER_IP']
 except KeyError:
@@ -144,9 +144,27 @@ def switch(choice,user):
 
     elif choice == '2':
         response = requests.get(baseUrl + f"/get_orders/{user['username']}")
+        data = response.json()
 
-        print(f'{response.text} {response.status_code}')
+        print(f'Status code : {response.status_code}')
+        orderExist = True
 
+        try:
+            orders = data['orders']
+        except KeyError:
+            orderExist = False
+            print("There is no orders!")
+            
+
+        if orderExist:
+            for order in orders:
+                print(f"Pizza : {order['pizza']}")
+                print(f"Price : {order['price']}")
+                print(f"Address: {order['address']}")
+                print(f"Status : {order['status']}")
+                print(f"Id : {order['id']}")
+                print("\n")
+        
 
 
     elif choice == '3':

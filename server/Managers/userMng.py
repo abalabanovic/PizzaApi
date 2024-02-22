@@ -16,6 +16,7 @@ class UserManager:
                 if user.password == password:
                     self.logged_user = user
                     return user
+                
         return None
     def register_user(self, username, password, address, role= 'customer'):
 

@@ -24,7 +24,7 @@ class OrderHandler:
         orders = self.order_manager.get_user_orders(user)
 
         if orders:
-            return jsonify({'orders': orders}), 200
+            return jsonify({'orders': orders, 'message': "Successfull"}), 200
         else:
             return jsonify({'message' : 'Orders not found'}), 404
 
