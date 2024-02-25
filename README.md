@@ -27,4 +27,7 @@ DELETE/menu/<pizza_id> - delete pizza from menu using pizza id
 DELETE/order/<order_id> - cancel order providing order id, admin is able to cancel order even if the order is ready to be delivered
 GET/get_all_orders - list all available orders
 
+#ADMIN AND CLIENT
+
+GET/logout - logout as a current user
 

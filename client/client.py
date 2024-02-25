@@ -53,33 +53,32 @@ def adminMenu():
         print(admin_string)
         option = input("Choose an option:\n")
 
-        if option == '1':
-            createPizza()
+        match option:
+            case "1":
+                createPizza()
+            case "2":
+                deletePizza()
+            case "3":
+                showMenu()
+            case "4":
+                status = show_all_orders()
+                if status:
 
+                    id = int(input("Enter order id to cancel it:\n"))
 
-        elif option == '2':
-            deletePizza()
-        
-        elif option == '3':
-            showMenu()
+                    response = requests.delete(baseUrl + f'/order/{id}', headers = headers)
+                    if response.status_code == 200:
+                        print(f'{response.text}{response.status_code}')
+                        show_all_orders()
 
-        elif option == '4':
+                    else:
+                        print(f'{response.text}{response.status_code}')
 
-            status = show_all_orders()
-            if status:
-
-                id = int(input("Enter order id to cancel it:\n"))
-
-                response = requests.delete(baseUrl + f'/order/{id}', headers = headers)
-                if response.status_code == 200:
-                    print(f'{response.text}{response.status_code}')
-                    show_all_orders()
-
-                else:
-                    print(f'{response.text}{response.status_code}')
-
-        elif option == '5':
-            sys.exit()
+       
+            case "5":
+                response = requests.get(baseUrl + "/logout")
+                print(f"Currently logged user: {response.text}")
+                startMenu()
 
 def show_all_orders():
 
@@ -120,63 +119,6 @@ def get_log_user():
     else:
         print(f"{response.text} {response.status_code}")
 
-def switch(choice,user):
-
-    if choice == "4":
-        showMenu()
-
-    elif choice == "1":
-        response = showMenu()
-        pizza_list = response.json().get('pizzas')
-            
-        if pizza_list:
-            pizza_choice = int(input("Enter pizza id:\n"))
-            selected_pizza = next((pizza for pizza in pizza_list if pizza['id'] == pizza_choice),None)
-
-            if selected_pizza:
-                    
-                createOrder(user, selected_pizza)
-
-            else:
-                    print("Invalid pizza id!")
-        else:
-                print("Pizza list is empty!")
-
-    elif choice == '2':
-        response = requests.get(baseUrl + f"/get_orders/{user['username']}")
-        data = response.json()
-
-        print(f'Status code : {response.status_code}')
-        orderExist = True
-
-        try:
-            orders = data['orders']
-        except KeyError:
-            orderExist = False
-            print("There is no orders!")
-            
-
-        if orderExist:
-            for order in orders:
-                print(f"Pizza : {order['pizza']}")
-                print(f"Price : {order['price']}")
-                print(f"Address: {order['address']}")
-                print(f"Status : {order['status']}")
-                print(f"Id : {order['id']}")
-                print("\n")
-        
-
-
-    elif choice == '3':
-        order_number = input("Enter order id: ")
-
-        response = requests.delete(baseUrl + f"/cancel_order/{user['username']}/{order_number}")
-        print(response.text)
-        print(response.status_code)
-
-    elif choice == '5':
-        sys.exit()
-
 def menu_list(user):
 
     while True:
@@ -192,8 +134,61 @@ def menu_list(user):
         print(menu_string)
 
         choice = input("Enter your choice:\n")
-        
-        switch(choice,user)
+
+        match choice:
+            case "1":
+                response = showMenu()
+                pizza_list = response.json().get('pizzas')
+            
+                if pizza_list:
+                    pizza_choice = int(input("Enter pizza id:\n"))
+                    selected_pizza = next((pizza for pizza in pizza_list if pizza['id'] == pizza_choice),None)
+
+                    if selected_pizza:    
+                        createOrder(user, selected_pizza)
+
+                    else:
+                        print("Invalid pizza id!")
+                else:
+                    print("Pizza list is empty!")
+
+            case "2":
+                response = requests.get(baseUrl + f"/get_orders/{user['username']}")
+                data = response.json()
+
+                print(f'Status code : {response.status_code}')
+                orderExist = True
+
+                try:
+                    orders = data['orders']
+                except KeyError:
+                    orderExist = False
+                    print("There is no orders!")
+
+                if orderExist:
+                    for order in orders:
+                        print(f"Pizza : {order['pizza']}")
+                        print(f"Price : {order['price']}")
+                        print(f"Address: {order['address']}")
+                        print(f"Status : {order['status']}")
+                        print(f"Id : {order['id']}")
+                        print("\n")
+
+            case "3":
+
+                order_number = input("Enter order id: ")
+                response = requests.delete(baseUrl + f"/cancel_order/{user['username']}/{order_number}")
+                print(response.text)
+                print(response.status_code)
+
+            case "4":
+
+                showMenu()
+
+            case "5":
+                response = requests.get(baseUrl + "/logout")
+                print(f"Current logged user: {response.text}")
+                startMenu()
 
 def showMenu():
 
@@ -233,10 +228,9 @@ def loginMenu():
                 response = requests.post(baseUrl + "/login", json=data, headers=headers)
                 print(f'{response.text} {response.status_code}')
 
-                if(response.status_code == 401):
-                    continue
-                else:
+                if(response.status_code == 200):
                     get_log_user()
+                
 
             elif answer2 == '2':
                 startMenu()

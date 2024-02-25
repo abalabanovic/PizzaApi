@@ -33,7 +33,11 @@ class UserHandler:
         if not username or not password:
             return jsonify({"error": 'Arguments missing'}), 400
 
+        #change when just password is wrong
         login_user = self.userManager.login_user(username,password)
+
+        if login_user == False:
+             return jsonify({"Message": "Wrong password"}), 401
 
 
         if login_user:
@@ -57,3 +61,7 @@ class UserHandler:
         logged_user = self.userManager.get_logged_user()
 
         return jsonify(logged_user)
+
+    def logOut(self):
+         
+         self.userManager.logout()

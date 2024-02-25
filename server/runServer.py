@@ -60,6 +60,11 @@ def get_orders(user):
 def cancel_order(username, order_id):
     return orderHandler.user_cancel_order(username,order_id)
 
+@app.route('/logout', methods=['GET'])
+def logout():
+    user_Handler.logOut()
+    return user_Handler.get_logged_user()
+
 #ADMIN
 
 @app.route('/menu', methods = ['POST'])
